@@ -1,98 +1,88 @@
 #include <iostream>
 #include <vector>
-using namespace std;
 #include <string>
-#include <cstdio>
+#include <algorithm>
+#include <map>
 
-// Definição da classe Grafo
-class Grafo {
-    private:
-        string origem;
-        string destino;
-        int peso;
-
-    public: 
-        // Construtor da classe
-        Grafo(string o, string d,int w) : origem(o), destino(d), peso(w) {}
-        
-        // Métodos para obter informações
-        string getO() const { return origem; }
-        string getD() const { return destino; }
-        int getP() const { return peso;}
+// Estrutura para representar uma aresta:
+struct Aresta {
+    std::string origem,destino;
+    int peso;
 };
 
-int main() {
-    vector<Grafo> grafoKruskal;
-    vector<Grafo> grafoResultado;
+// Função para comparar arestas com base em seus pesos:
+bool compararArestas(const Aresta& a, const Aresta& b) {
+    return a.peso < b.peso;
+}
 
-    // Criando alguns objetos da classe Pessoa e adicionando ao vetor
-    grafoKruskal.push_back(Grafo("A","B", 2));
-    grafoKruskal.push_back(Grafo("A","C", 3));
-    grafoKruskal.push_back(Grafo("A","D", 3));
-    grafoKruskal.push_back(Grafo("B","C", 4));
-    grafoKruskal.push_back(Grafo("B","E", 3));
-    grafoKruskal.push_back(Grafo("C","D", 5));
-    grafoKruskal.push_back(Grafo("C","E", 1));
-    grafoKruskal.push_back(Grafo("D","F", 7));
-    grafoKruskal.push_back(Grafo("E","F", 8));
-    grafoKruskal.push_back(Grafo("F","G", 9));
+// Função para encontrar a raiz de um conjunto usando o algoritmo de busca em árvore:
+std::string  encontrarRaiz(std::string vertice, std::map<std::string, std::string>& conjunto) {
+    while (conjunto[vertice] != vertice) {
+        vertice = conjunto[vertice];
+    }
+    return vertice;
+}
 
-    // Percorrendo o vetor e exibindo as informações de cada pessoa
-    for (const Grafo& vertices : grafoKruskal) {
-        cout << "Origem: " << vertices.getO() << ", Destino: " << vertices.getD() <<  " Peso: " << vertices.getP() << endl;
+// Função para unir dois subconjuntos em um conjunto maior:
+void juntarArestas(std::string raizA, std::string raizB, std::map<std::string, std::string>& conjunto) {
+    conjunto[raizB] = raizA;
+}
+
+// Algoritmo de Kruskal:
+void kruskal(std::vector<Aresta>& grafo) {
+    // Ordena as arestas em ordem crescente de peso
+    sort(grafo.begin(), grafo.end(), compararArestas);
+
+    std::map<std::string, std::string> conjunto;
+
+    // Adiciona ao conjunto os pares de origem e destino
+    for (const Aresta& aresta : grafo) {
+        conjunto[aresta.origem] = aresta.origem;
+        conjunto[aresta.destino] = aresta.destino;
     }
 
-    int cont = 0;
-    Grafo& primeiroVertice = grafoKruskal[1];
-    int minP = primeiroVertice.getP(); 
+    std::vector<Aresta> arvoreMinima;
 
-    while (cont < grafoKruskal.size()){
-        string origem;
-        string destino;
-        printf("Peso: %d \n",minP);
+    // checa se houve ciclo 
+    for (const Aresta& aresta : grafo) {
+        std::string raizOrigem = encontrarRaiz(aresta.origem, conjunto);
+        std::string raizDestino = encontrarRaiz(aresta.destino, conjunto);
 
-        for (int i = 0; i < grafoKruskal.size();i++) {
-            Grafo& vertices = grafoKruskal[i]; 
-            Grafo& verticesAux = grafoKruskal[i+1]; 
-            
-            //printf("valor do vertice %d\n",vertices.getP());
-
-            if (vertices.getP() <  minP){
-                printf("recebeu \n");
-                minP = vertices.getP();
-                origem = vertices.getO();
-                destino = vertices.getD();
-            }
-            else if (vertices.getP() == minP || verticesAux.getP() > 0){
-                vertices = grafoKruskal[i+1];
-                minP = vertices.getP();
-                origem = vertices.getO();
-                destino = vertices.getD();
-            }
+        // Se a raiz de origem e a raiz de destino forem diferentes, a aresta pode ser adicionada à árvore mínima
+        if (raizOrigem != raizDestino) {
+            arvoreMinima.push_back(aresta);
+            juntarArestas(raizOrigem, raizDestino, conjunto); // assim o conjunto "liga as arestas ja visitadas"
         }
-        // for (int j = 0; j < grafoResultado.size();j++) {    
-        //     Grafo& verticesRes = grafoResultado[j]; 
-
-        //     if (grafoResultado.size() == 0){
-        //         grafoResultado.push_back(Grafo(origem,destino, minP));
-        //     }
-        //     else{
-                
-        //     }
-        // }
-        printf("Minimo peso: %d \n",minP);
-        printf("Minimo origem: %s \n",origem.c_str());
-
-        cont++;
     }
 
-    
-    printf("\n    Grafo Resultado: \n");
-    for (const Grafo& vertices : grafoResultado) {
-        cout << "Origem: " << vertices.getO() << ", Destino: " << vertices.getD() <<  " Peso: " << vertices.getP() << endl;
+    // Imprime árvore mínima
+    for (const Aresta& aresta : arvoreMinima) {
+        std::cout << aresta.origem << " - " << aresta.destino << " : " << aresta.peso << std::endl;
     }
+}
+
+
+
+
+int main() {
+    std::vector<Aresta> grafo;
+
+    grafo.push_back({"A","B", 2});
+    grafo.push_back({"A","C", 3});
+    grafo.push_back({"A","D", 3});
+    grafo.push_back({"B","C", 4});
+    grafo.push_back({"B","E", 3});
+    grafo.push_back({"C","D", 5});
+    grafo.push_back({"C","E", 1});
+    grafo.push_back({"D","F", 7});
+    grafo.push_back({"E","F", 8});
+    grafo.push_back({"F","G", 9});
+
+    kruskal(grafo);
 
     return 0;
-} 
+}
+
+
 
 
