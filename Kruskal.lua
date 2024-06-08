@@ -106,7 +106,7 @@ function Kruskal(grafo)
     local aux_custo = 0
     local aux_verticeE, aux_verticeI, removedor
     local iter = 0
-    print("conatdor",contador)
+    print("contador",contador)
 
     while (iter < (contador - 1)) do
         local comparador = 999999
@@ -140,21 +140,28 @@ function Kruskal(grafo)
 
     end
     return custo
-
 end
 -------------------------------------------------- Função para aplicar o algoritmo de Kruskal --------------------------------------------------
 
-Inserir_vertice("A","B",5)
-Inserir_vertice("A","D",9)
-Inserir_vertice("A","E",10)
-Inserir_vertice("A","C",6)
-Inserir_vertice("B","D",3)
-Inserir_vertice("C","E",1)
-Inserir_vertice("C","D",8)
-Inserir_vertice("D","E",2)
+-- Inserir_vertice("A","B",5)
+-- Inserir_vertice("A","D",9)
+-- Inserir_vertice("A","E",10)
+-- Inserir_vertice("A","C",6)
+-- Inserir_vertice("B","D",3)
+-- Inserir_vertice("C","E",1)
+-- Inserir_vertice("C","D",8)
+-- Inserir_vertice("D","E",2)
 
-
-
+Inserir_vertice("A","B", 2)
+Inserir_vertice("A","C", 3)
+Inserir_vertice("A","D", 3)
+Inserir_vertice("B","C", 4)
+Inserir_vertice("B","E", 3)
+Inserir_vertice("C","D", 5)
+Inserir_vertice("C","E", 1)
+Inserir_vertice("D","F", 7)
+Inserir_vertice("E","F", 8)
+Inserir_vertice("F","G", 9)
 
 local teste = Kruskal(grafo)
 print(teste)
